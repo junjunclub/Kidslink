@@ -1,6 +1,6 @@
 import axiosInstance from './token/axiosInstance'
 
-export interface DosageData {
+export interface TeacherDosageData {
   dosageId: number;
   name: string;
   confirmationStatus: string;
@@ -15,7 +15,7 @@ export interface DosageData {
   childName: string;
 }
 
-export interface AbsentData {
+export interface TeacherAbsentData {
   absentId: number;
   reason: string;
   confirmationStatus: string;
@@ -26,10 +26,41 @@ export interface AbsentData {
   childName: string;
 }
 
-export interface Document {
+export interface TeacherDocument {
   type: 'Absent' | 'Dosage';
-  details: AbsentData | DosageData;
+  details: TeacherAbsentData | TeacherDosageData;
 }
+
+// 학부모 문서조회
+export interface ParentDosageData {
+  dosageId: number;
+  name: string;
+  confirmationStatus: string;
+  startDate: string;
+  endDate: string;
+  details: string;
+  num: string;
+  times: string;
+  storageInfo: string;
+  volume: string;
+}
+
+export interface ParentAbsentData {
+  absentId: number;
+  reason: string;
+  confirmationStatus: string;
+  startDate: string;
+  endDate: string;
+  details: string;
+}
+
+export interface ParentDocument {
+  id: number;
+  date: string;
+  dosage?: ParentDosageData;
+  absent?: ParentAbsentData;
+}
+
 
 
 // 목록 조회에 쓰임

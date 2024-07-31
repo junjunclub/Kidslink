@@ -1,6 +1,7 @@
 // 여기 수정 필요
 import { create } from 'zustand'
 
+
 // AuthState interface and state
 interface AuthState {
   username: string;

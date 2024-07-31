@@ -1,25 +1,36 @@
-import React, { useState } from 'react';
-import { FaRegBell } from 'react-icons/fa6';
+import React, { useState, useEffect } from 'react';
+import { FaRegBell, FaBook, FaComment, FaBus, FaBullhorn } from 'react-icons/fa6';
 import { IoCloseSharp } from 'react-icons/io5';
-// import { FaBook, FaComment, FaPhotoVideo } from 'react-icons/fa';
 import ThreeModel from '../../ThreeModel';
+import { getAlarmCount, getAllAlarms } from '../../../api/alarm';
 
-// 나중에 data 타입 다 한곳에 모아서 export 시키기
 interface Notification {
-  time: string;
-  title: string;
+  id: number;
+  date: string;
   contents: string;
-  code: 'NOTICE' | 'DIARY' | 'ALBUM' | 'BUS' |'MEETING' | 'DOCUMENT';
+  code: 'NOTICE' | 'DIARY' | 'ALBUM' | 'BUS' | 'MEETING';
 }
 
-interface AlaramBellProps {
-  notificationCount: number;
-  notifications: Notification[];
-}
-
-const AlaramBell: React.FC<AlaramBellProps> = ({ notificationCount, notifications: initialNotifications }) => {
+const AlaramBell: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const count = await getAlarmCount();
+        setNotificationCount(count);
+
+        const alarms = await getAllAlarms();
+        setNotifications(alarms);
+      } catch (error) {
+        console.error('Failed to fetch alarms', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleNotificationClick = () => {
     setIsModalOpen(!isModalOpen);
@@ -33,19 +44,22 @@ const AlaramBell: React.FC<AlaramBellProps> = ({ notificationCount, notification
     setNotifications([]);
   };
 
-  // 나중에 아이콘 넣을 생각
-  // const getIcon = (type: string) => {
-  //   switch (type) {
-  //     case '알림장':
-  //       return <FaBook className="w-6 h-6 text-black" />;
-  //     case '상담':
-  //       return <FaComment className="w-6 h-6 text-black" />;
-  //     case '앨범':
-  //       return <FaPhotoVideo className="w-6 h-6 text-black" />;
-  //     default:
-  //       return null;
-  //   }
-  // };
+  const getIcon = (type: string) => {
+    switch (type) {
+      case 'DIARY':
+        return <FaBook className="w-6 h-6 text-gray-800" />;
+      case 'MEETING':
+        return <FaComment className="w-6 h-6 text-gray-800" />;
+      case 'ALBUM':
+        return <FaBook className="w-6 h-6 text-gray-800" />;
+      case 'BUS':
+        return <FaBus className="w-6 h-6 text-gray-800" />;
+      case 'NOTICE':
+        return <FaBullhorn className="w-6 h-6 text-gray-800" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="font-KoPubDotum relative">
@@ -62,33 +76,35 @@ const AlaramBell: React.FC<AlaramBellProps> = ({ notificationCount, notification
             <div className="space-y-4 mt-8">
               {notifications.map((notification, index) => (
                 <div
-                  key={index}
+                  key={notification.id}
                   onClick={() => handleRemoveNotification(index)}
-                  className="relative flex flex-col p-4 bg-white bg-opacity-30 border border-white rounded-lg shadow-md backdrop-filter backdrop-blur-md text-white cursor-pointer"
+                  className="relative flex items-center p-4 bg-white bg-opacity-90 border border-gray-300 rounded-lg shadow-md backdrop-filter backdrop-blur-md text-black cursor-pointer"
                   style={{
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                     borderRadius: '10px',
                     backdropFilter: 'blur(10px)',
-                    background: 'rgba(255, 255, 255, 0.3)',
+                    background: 'rgba(255, 255, 255, 0.9)',
                   }}
                 >
-                  <div className="flex items-center mb-1">
-                    {/* {getIcon(notification.type)} */}
-                    <span className="font-bold text-gray-800 ml-2">{notification.title}</span>
+                  {getIcon(notification.code)}
+                  <div className="ml-4">
+                    <div className="flex items-center mb-1">
+                      <span className="font-bold text-gray-800">{notification.code}</span>
+                    </div>
+                    <span className="text-xs text-gray-600">{new Date(notification.date).toLocaleDateString()}</span>
+                    <p className="text-gray-700">{notification.contents}</p>
                   </div>
-                  <span className="text-xs text-gray-600">{notification.time}</span>
-                  <p className="text-gray-700">{notification.contents}</p>
                 </div>
               ))}
               {notifications.length > 0 && (
                 <div className="flex justify-center mt-4">
                   <button
                     onClick={handleRemoveAllNotifications}
-                    className="flex items-center justify-center w-10 h-10 bg-white bg-opacity-30 border border-white rounded-full shadow-md backdrop-filter backdrop-blur-md text-white"
+                    className="flex items-center justify-center w-10 h-10 bg-white bg-opacity-90 border border-gray-300 rounded-full shadow-md backdrop-filter backdrop-blur-md text-black"
                     style={{
                       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                       backdropFilter: 'blur(10px)',
-                      background: 'rgba(255, 255, 255, 0.3)',
+                      background: 'rgba(255, 255, 255, 0.9)',
                     }}
                   >
                     <IoCloseSharp className="w-6 h-6 text-gray-700" />

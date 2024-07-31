@@ -7,7 +7,7 @@ import pill from '../../assets/parent/pill.png';
 import absentIcon from '../../assets/parent/absent.png';
 import checkedIcon from '../../assets/parent/check.png';
 import handWithPen from '../../assets/parent/pen.png';
-import { getKidAllDocuments, Document } from '../../api/document';
+import { getKidAllDocuments, ParentDocument } from '../../api/document';
 import { useParentInfoStore } from '../../stores/useParentInfoStore';
 
 interface MappedDocument {
@@ -37,7 +37,7 @@ export default function ParentDocument() {
         try {
           const response: Document[] = await getKidAllDocuments(childId);
           if (response) {
-            const parsedDocuments = response.map((item: Document): MappedDocument => {
+            const parsedDocuments = response.map((item: ParentDocument): MappedDocument => {
               if (item.dosage) {
                 return {
                   id: item.id,

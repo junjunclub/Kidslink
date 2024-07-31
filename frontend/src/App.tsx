@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useAppStore, UserState } from "./stores/store";
 import ParentHome from "./pages/parent/ParentHome";
 import ParentDocument from "./pages/parent/ParentDocument";
@@ -9,6 +9,7 @@ import ParentNotice from "./pages/parent/ParentNotice";
 import ParentNoticeDetail from "./pages/parent/ParentNoticeDetail";
 import ParentAlbum from "./pages/parent/ParentAlbum";
 import ParentAlbumDetail from "./pages/parent/ParentAlbumDetail";
+import ParentAlbumDecorate from "./pages/parent/ParentAlbumDecorate";
 import ParentGrowth from "./pages/parent/ParentGrowth";
 import ParentGrowthDetail from "./pages/parent/ParentGrowthDetail";
 import ParentBus from "./pages/parent/ParentBus";
@@ -67,7 +68,8 @@ const App: React.FC = () => {
                 <Route path="/notice" element={<ParentNotice />} />
                 <Route path="/notice/:id" element={<ParentNoticeDetail />} />
                 <Route path="/album" element={<ParentAlbum />} />
-                <Route path="/album/:date" element={<ParentAlbumDetail />} />
+                <Route path="/album/:albumId" element={<ParentAlbumDetail />} />
+                <Route path="/album/:albumId/image/:imageId" element={<ParentAlbumDecorate />} />
                 <Route path="/growth" element={<ParentGrowth />} />
                 <Route path="/growth/:id" element={<ParentGrowthDetail />} />
                 <Route path="/bus" element={<ParentBus />} />

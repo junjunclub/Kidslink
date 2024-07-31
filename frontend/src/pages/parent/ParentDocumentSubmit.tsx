@@ -166,4 +166,4 @@ const ParentDocument: React.FC = () => {
   );
 };
 
-export default ParentDocument;
+export default ParentDocumentSubmit;
