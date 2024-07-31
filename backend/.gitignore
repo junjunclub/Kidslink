@@ -37,3 +37,6 @@ out/
 .vscode/
 
 uploads/*
+
+**/src/main/**/*.json
+**/src/main/**/*.p12

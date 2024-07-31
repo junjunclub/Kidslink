@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
-@Profile("dev")
+@Profile("prod")
 public class InMemoryTokenStorageService implements TokenStorageService, InitializingBean {
 
     private final ConcurrentHashMap<String, RefreshToken> tokenStore = new ConcurrentHashMap<>();

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-@Profile("prod")
+@Profile("dev")
 public class RedisTokenStorageService implements TokenStorageService, InitializingBean {
 
     private final RefreshTokenRepository refreshTokenRepository;
