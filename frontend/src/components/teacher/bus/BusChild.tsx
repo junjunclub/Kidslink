@@ -1,34 +1,40 @@
-import profileImg from "../../../assets/teacher/profile_img.jpg";
-import { IoCallOutline } from "react-icons/io5";
-import { useState } from "react"; 
+import React from 'react';
+import { useBusStore } from '../../../stores/useBusStore'
 
-interface BusChildProps {
-    childName: string;
-    parentTel: string;
-    status: string;
+// BusChildProps 인터페이스에 checked 추가
+export interface BusChildProps {
+  childName: string;
+  parentTel: string;
+  status: string;
+  checked: string;
 }
 
-export default function BusChild({childName, parentTel, status}: BusChildProps){
-    const [isChecked, setCheck] = useState(status);
+const BusChild: React.FC<BusChildProps> = ({ childName, parentTel, status, checked }) => {
+  const { updateChildChecked } = useBusStore((state) => ({
+    updateChildChecked: state.updateChildChecked,
+  }));
 
-    const check = () => {
-        if(isChecked === "T") setCheck("F");
-        else if(isChecked === "F") setCheck("T");
-    }
-    
-    return <>
-    <div className="flex flex-row items-center p-[14px]">
-        <div className="w-[80px] h-[80px] mr-5">
-            <img src={profileImg} className="w-full h-full rounded-full object-cover"  />
-        </div>
-        <div className="flex flex-col items-start w-[178px]">
-            <p className="font-bold text-[20px]">{childName}</p>
-            <div className="flex flex-row items-center">
-                <IoCallOutline className="mr-2 text-[#7C7C7C]"/>
-                <p className="text-[#7C7C7C] text-[14px]">{parentTel}</p>
-            </div>
-        </div>
-        <input type="checkbox" className="w-5 h-5 accent-[#363636]" checked={isChecked === 'T'} onClick={check}/>
+  const handleCheckChange = () => {
+    // 체크 상태를 반전시키고 Zustand 스토어에 업데이트
+    const newCheckedState = checked === 'T' ? 'F' : 'T';
+    updateChildChecked(childName, newCheckedState);
+  };
+
+  return (
+    <div className="flex items-center justify-between py-2 px-3 border-b">
+      <div className="flex flex-col">
+        <span>{childName}</span>
+        <span className="text-sm text-gray-500">{parentTel}</span>
+      </div>
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          checked={checked === 'T'}
+          onChange={handleCheckChange}
+        />
+      </div>
     </div>
-    </>
-}
+  );
+};
+
+export default BusChild;
