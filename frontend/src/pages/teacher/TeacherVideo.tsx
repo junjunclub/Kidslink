@@ -1,7 +1,7 @@
 import { useLocation, useParams } from "react-router-dom";
 import { ChangeEvent, useEffect, useState } from "react";
 import OpenViduVideoComponent from "../../components/openvidu/VideoComponent";
-import { handleSpeechRecognition, stopRecording } from "../../api/openvidu";
+import { handleSpeechRecognition, stopRecording, stopSpeechRecognition } from "../../api/openvidu";
 import TeacherHeader from "../../components/teacher/common/TeacherHeader";
 import MeetingBackground from "../../assets/teacher/meeting_background.png";
 import { useTeacherInfoStore } from "../../stores/useTeacherInfoStore";
@@ -41,7 +41,8 @@ export default function TeacherVideo() {
   const [isSessionJoined, setIsSessionJoined] = useState(false);
   const [myStreamId, setMyStreamId] = useState<string | undefined>(undefined);
   const [otherVideoActive, setOtherVideoActive] = useState(false);
-
+  const [isSttActive, setIsSttActive] = useState(false);
+  
   useEffect(() => {
     async function fetchTeacherInfo() {
       try {
@@ -64,16 +65,24 @@ export default function TeacherVideo() {
     fetchRecordingsList(setRecordings);
   }, []);
 
+
   useEffect(() => {
     if (openvidu.publisher) {
       openvidu.publisher.publishAudio(control.mic);
       openvidu.publisher.publishVideo(control.video);
     }
-  }, [control, openvidu.publisher]);
+    if (control.mic && !isSttActive) {
+      setIsSttActive(true);
+      handleSpeechRecognition(user.sessionId, setCurrentRecordingId);
+    } else if (!control.mic && isSttActive) {
+      setIsSttActive(false);
+      stopSpeechRecognition();
+    }
+  }, [control.mic, control.video, isSttActive, openvidu.publisher, user.sessionId]);
 
   useEffect(() => {
     if (isSessionJoined) {
-      handleSpeechRecognition(user.sessionId, setCurrentRecordingId);
+      // handleSpeechRecognition(user.sessionId, setCurrentRecordingId);
     }
   }, [isSessionJoined, user.sessionId]);
 
@@ -166,16 +175,20 @@ export default function TeacherVideo() {
         )}
         <div className="recordings-list mt-4">
           <h2>녹화 파일 목록</h2>
-          <ul>
-            {recordings.map((recording) => (
-              <li key={recording.id}>
-                {recording.name} -{" "}
-                <a href={recording.url} target="_blank" rel="noopener noreferrer">
-                  다운로드
-                </a>
-              </li>
-            ))}
-          </ul>
+          {recordings && recordings.length > 0 ? (
+            <ul>
+              {recordings.map((recording) => (
+                <li key={recording.id}>
+                  {recording.name} -{" "}
+                  <a href={recording.url} target="_blank" rel="noopener noreferrer">
+                    다운로드
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>녹화된 파일이 없습니다.</p>
+          )}
         </div>
       </div>
     </div>

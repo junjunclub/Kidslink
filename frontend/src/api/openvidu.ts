@@ -28,10 +28,12 @@ const createSession = async (sessionId: string): Promise<string> => {
     {
       headers: {
         "Content-Type": "application/json",
+        // 0807 1403 김범수 추가 문제 시 삭제
+        "Authorization": `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`
       }
     }
   );
-  return response.data; // 세션 ID 반환, data.id를 통해 올바른 값 추출
+  return response.data;  // 세션 ID 반환, data.id를 통해 올바른 값 추출
 };
 
 const createToken = async (sessionId: string): Promise<string> => {
@@ -39,27 +41,34 @@ const createToken = async (sessionId: string): Promise<string> => {
     `${APPLICATION_SERVER_URL}/sessions/${sessionId}/connections`,
     {},
     {
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`
+      }
     }
   );
   return response.data; // 토큰 반환
 };
 
 // 녹화 시작
-const startRecording = async (sessionId: string): Promise<string> => {
+export const startRecording = async (sessionId: string): Promise<string> => {
   try {
     const response = await axios.post(
-      `${APPLICATION_SERVER_URL}/sessions/${sessionId}/recordings/start`,
+      `${APPLICATION_SERVER_URL}/recordings/start`,
       {
+        session: sessionId,
         outputMode: "COMPOSED",
-        recordingMode: "ALWAYS",
-        name: "recording-name",
         hasAudio: true,
         hasVideo: true
       },
-      { headers: { "Content-Type": "application/json" } }
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`
+        }
+      }
     );
-    return response.data;
+    return response.data.id;
   } catch (error) {
     console.error("Error starting recording:", error);
     throw error;
@@ -72,7 +81,12 @@ export const stopRecording = async (recordingId: string): Promise<any> => {
     const response = await axios.post(
       `${APPLICATION_SERVER_URL}/recordings/stop/${recordingId}`,
       {},
-      { headers: { "Content-Type": "application/json" } }
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`
+        }
+      }
     );
     return response.data;
   } catch (error) {
@@ -82,10 +96,14 @@ export const stopRecording = async (recordingId: string): Promise<any> => {
 };
 
 // 녹화된 영상 가져오기
-export const fetchRecordings = async (): Promise<any[]> => {
+export const fetchRecordings = async (): Promise<Recording[]> => {
   try {
-    const response = await axios.get(`${APPLICATION_SERVER_URL}/recordings`);
-    return response.data;
+    const response = await axios.get(`${APPLICATION_SERVER_URL}/recordings`, {
+      headers: {
+        "Authorization": `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`
+      }
+    });
+    return response.data.items;
   } catch (error) {
     console.error("Error fetching recordings:", error);
     throw error;
@@ -98,10 +116,10 @@ const detectProfanity = (text: string): boolean => {
   return profanityList.some((word) => text.includes(word));
 };
 
-// stt()
+// STT 시작 함수
 export const handleSpeechRecognition = async ( 
   sessionId: string,
-  setRecordingId: React.Dispatch<React.SetStateAction<string | null>>
+  setRecordingId: React.Dispatch<React.SetStateAction<string | null>>,
 ) => {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
@@ -120,11 +138,11 @@ export const handleSpeechRecognition = async (
         console.log(transcript);
         if (detectProfanity(transcript)) {
           console.log("Profanity detected. Starting recording...");
-          alert("욕설이 감지되었습니다. 녹화가 시작됩니다."); // 알림창 추가 ----> ***************TODO : 수정필요*************
+          alert("욕설이 감지되었습니다. 녹화가 시작됩니다.");
           const recordingId = await startRecording(sessionId);
           console.log("Recording started with ID:", recordingId);
           setRecordingId(recordingId);
-          recognition.stop(); // 중복 녹화를 방지하기 위해 감지 중지
+          recognition.stop();
         }
       }
     }
@@ -137,6 +155,7 @@ export const handleSpeechRecognition = async (
   recognition.start();
 };
 
+// STT 중지 함수
 export const stopSpeechRecognition = () => {
   const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (recognition) {
