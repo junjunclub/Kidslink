@@ -1,8 +1,14 @@
 import { create } from 'zustand';
-import { ChildInfo } from '../api/Info';
+
+interface KindergartenClass {
+  kindergartenClassId: num
+}
 
 interface Child {
-  child: ChildInfo;
+  birth: string;
+  childId: number;
+  gender: string;
+  kindergartenClass: KindergartenClass;
   parentTel: string;
   status: string;
   checked?: boolean;
