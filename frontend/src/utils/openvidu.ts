@@ -1,5 +1,5 @@
 import { OpenVidu, StreamEvent, StreamPropertyChangedEvent } from "openvidu-browser";
-import { handleSpeechRecognition, fetchRecordings, getToken,stopSpeechRecognition } from "../api/openvidu";
+import { handleSpeechRecognition, fetchRecordings, getToken, stopSpeechRecognition } from "../api/openvidu";
 import { OpenViduState, Recording, User } from "../types/openvidu";
 import { getParentInfo } from "../api/Info";
 
@@ -23,7 +23,6 @@ export const joinSession = async (
         ...prevOpenvidu,
         subscribers: [...prevOpenvidu.subscribers, subscriber],
       }));
-      console.log(subscriber);
     } catch (error) {
       console.error("Error during stream subscription:", error);
     }
@@ -100,19 +99,17 @@ export const joinSession = async (
     .catch((error) => {
       console.log("There was an error connecting to the session:", error.code, error.message);
     });
-
-  console.log(session);
-  console.log("session");
 };
 
 export const leaveSession = (
   openvidu: OpenViduState,
   setOpenvidu: React.Dispatch<React.SetStateAction<OpenViduState>>,
-  setIsSessionJoined: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSessionJoined: React.Dispatch<React.SetStateAction<boolean>>,
+  navigate: (path: string) => void // navigate 함수 추가
 ) => {
   if (openvidu.session) {
     openvidu.session.disconnect();
-    stopSpeechRecognition();
+    // stopSpeechRecognition();
     setOpenvidu((prevOpenvidu) => ({
       ...prevOpenvidu,
       session: undefined,
@@ -121,6 +118,7 @@ export const leaveSession = (
       subscribers: [],
     }));
     setIsSessionJoined(false);
+    navigate('/meeting'); // /meeting 페이지로 이동
   }
 };
 
