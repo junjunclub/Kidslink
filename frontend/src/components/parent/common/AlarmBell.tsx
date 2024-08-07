@@ -12,6 +12,7 @@ interface Alarm {
   code: string; 
 }
 
+
 interface Notification {
   id: number;
   date: string;

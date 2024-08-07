@@ -16,6 +16,7 @@ interface Notification {
   code: 'NOTICE' | 'DIARY' | 'ALBUM' | 'BUS' |'MEETING' | 'DOCUMENT';
 }
 
+
 export default function SubHeader({ title }: CommonHeaderProps) {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);

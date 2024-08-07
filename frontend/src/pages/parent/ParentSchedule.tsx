@@ -1,11 +1,16 @@
-import { useState, useEffect } from "react"
-import Calendar from "react-calendar"
-import moment from "moment"
-import "moment/locale/ko"
-import { getAllParentSchedules, getParentSchedules } from "../../api/schedule"
-import styled from "styled-components"
-import { FaPills, FaRegTimesCircle, FaSchool, FaChalkboardTeacher } from "react-icons/fa"
-import 'react-calendar/dist/Calendar.css'
+import { useState, useEffect } from "react";
+import Calendar from "react-calendar";
+import moment from "moment";
+import "moment/locale/ko";
+import { getAllParentSchedules, getParentSchedules } from "../../api/schedule";
+import styled from "styled-components";
+import {
+  FaPills,
+  FaRegTimesCircle,
+  FaSchool,
+  FaChalkboardTeacher,
+} from "react-icons/fa";
+import "react-calendar/dist/Calendar.css";
 
 const StyledCalendar = styled(Calendar)`
   * {
@@ -141,79 +146,86 @@ interface DetailedSchedule {
 }
 
 export default function ParentSchedule() {
-  const [value, setValue] = useState<Date>(new Date())
+  const [value, setValue] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(
     moment(value).format("YYYY-MM-DD")
-  )
-  const [schedules, setSchedules] = useState<string[]>([])
-  const [detailedSchedules, setDetailedSchedules] = useState<DetailedSchedule | null>(null)
+  );
+  const [schedules, setSchedules] = useState<string[]>([]);
+  const [detailedSchedules, setDetailedSchedules] =
+    useState<DetailedSchedule | null>(null);
 
   const fetchSchedules = async (year: number, month: number) => {
     try {
-      const fetchedSchedules = await getAllParentSchedules(year, month)
-      setSchedules(fetchedSchedules)
+      const fetchedSchedules = await getAllParentSchedules(year, month);
+      setSchedules(fetchedSchedules);
     } catch (error) {
-      console.error("Failed to fetch schedules:", error)
+      console.error("Failed to fetch schedules:", error);
     }
-  }
+  };
 
   const fetchDetailedSchedules = async (date: string) => {
     try {
-      const detailedSchedule = await getParentSchedules(date)
-      setDetailedSchedules(detailedSchedule)
+      const detailedSchedule = await getParentSchedules(date);
+      setDetailedSchedules(detailedSchedule);
     } catch (error) {
-      console.error("Failed to fetch detailed schedule:", error)
+      console.error("Failed to fetch detailed schedule:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    const current = value
-    const year = moment(current).year()
-    const month = moment(current).month() + 1
-    fetchSchedules(year, month)
-    fetchDetailedSchedules(moment(current).format("YYYY-MM-DD"))
-  }, [value])
+    const current = value;
+    const year = moment(current).year();
+    const month = moment(current).month() + 1;
+    fetchSchedules(year, month);
+    fetchDetailedSchedules(moment(current).format("YYYY-MM-DD"));
+  }, [value]);
 
   useEffect(() => {
     if (selectedDate) {
-      fetchDetailedSchedules(selectedDate)
+      fetchDetailedSchedules(selectedDate);
     }
-  }, [selectedDate])
+  }, [selectedDate]);
 
   const handleDateClick = (date: Date) => {
-    const formattedDate = moment(date).format("YYYY-MM-DD")
-    setSelectedDate(formattedDate)
-    setValue(value)
-  }
+    const formattedDate = moment(date).format("YYYY-MM-DD");
+    setSelectedDate(formattedDate);
+    setValue(value);
+  };
 
   const getActiveMonth = (activeStartDate: Date) => {
-    const year = moment(activeStartDate).year()
-    const month = moment(activeStartDate).month() + 1
-    fetchSchedules(year, month)
-  }
+    const year = moment(activeStartDate).year();
+    const month = moment(activeStartDate).month() + 1;
+    fetchSchedules(year, month);
+  };
 
   const addContent = ({ date }: { date: Date }) => {
-    const dateString = moment(date).format("YYYY-MM-DD")
-    const hasSchedule = schedules.includes(dateString)
-    return hasSchedule ? <div className="custom-icon">😊</div> : null
-  }
+    const dateString = moment(date).format("YYYY-MM-DD");
+    const hasSchedule = schedules.includes(dateString);
+    return hasSchedule ? <div className="custom-icon">😊</div> : null;
+  };
 
   return (
     <div className="relative min-h-[100dvh] flex flex-col bg-[#FFEC8A] overflow-hidden">
       <div className="absolute bottom-0 h-[80%] flex flex-col w-full bg-white shadow-top rounded-tl-[20px] rounded-tr-[20px] pt-12 animate-slideUp">
         <div className="flex flex-col justify-center items-center">
-          <div className="w-full relative overflow-hidden rounded-2xl"
-          style={{ display: "flex", justifyContent: "center"  }}>
+          <div
+            className="w-full relative overflow-hidden rounded-2xl"
+            style={{ display: "flex", justifyContent: "center" }}
+          >
             <StyledCalendar
               locale="ko"
               onChange={(date) => handleDateClick(date as Date)}
               value={value}
               next2Label={null}
               prev2Label={null}
-              formatDay={(locale: string, date: Date) => moment(date).format("D")}
+              formatDay={(locale: string, date: Date) =>
+                moment(date).format("D")
+              }
               tileContent={addContent}
               showNeighboringMonth={true}
-              onActiveStartDateChange={({ activeStartDate }) => getActiveMonth(activeStartDate!)}
+              onActiveStartDateChange={({ activeStartDate }) =>
+                getActiveMonth(activeStartDate!)
+              }
             />
           </div>
         </div>
@@ -288,5 +300,5 @@ export default function ParentSchedule() {
         )}
       </div>
     </div>
-  )
+  );
 }

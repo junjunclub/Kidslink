@@ -115,7 +115,7 @@ export default function App() {
           <Route path="/social/join" element={<SocialJoinRedirect />} />
           <Route path="/social/login" element={<SocialLoginRedirect />} />
           <Route path="/join/:role" element={<JoinDetails />} />
-          {/* 기본 사용자에 대한 잘못된 경로 */}
+          {/* 기본 사용자에 대한 잘못된 경로이동 */}
           <Route path="*" element={<Navigate to="/" />} />
         </>
       )}

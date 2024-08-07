@@ -11,6 +11,7 @@ interface Notification {
   code: 'NOTICE' | 'DIARY' | 'ALBUM' | 'BUS' |'MEETING' | 'DOCUMENT';
 }
 
+
 export default function MainHeader() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
