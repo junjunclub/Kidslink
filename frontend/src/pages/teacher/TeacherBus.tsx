@@ -130,15 +130,20 @@ export default function TeacherBus() {
     return <div>Invalid bus stop selected.</div>;
   }
 
-  const renderModalContent = () => (
+  const renderModalContent = (content) => (
     <div className="w-full max-w-md py-3 px-3 bg-white">
       <h2 className="text-2xl font-semibold mb-4">알림</h2>
-      <p className="text-gray-700 mb-6">학부모에게 버스 출발 알림을 전송하시겠습니까?</p>
+      <p className="text-gray-700 mb-6">학부모에게 {content} 알림을 전송하시겠습니까?</p>
       <div className="flex justify-end space-x-3">
         <button
           onClick={() => {
-            postBusStart(busId);
-            startWebSocketConnection();
+            if (content === "출발") {
+              postBusStart(busId);
+              startWebSocketConnection();
+            } else {
+              stopWebSocketConnection();
+              setAllChecked(false);
+            }
             closeModal();
           }}
           className="px-4 py-2 border-[2px] border-[#7C7C7C] bg-[#E3EEFF] px-3 py-1 font-bold rounded-[10px] shadow-md hover:bg-[#D4DDEA] transition duration-300 ease-in-out"
@@ -155,16 +160,15 @@ export default function TeacherBus() {
     </div>
   );
 
-  const openCreateModal = () => {
-    openModal(renderModalContent());
+  const openCreateModal = (content) => {
+    openModal(renderModalContent(content));
   };
 
   const handleButtonClick = () => {
     if (isWebSocketActive) {
-      stopWebSocketConnection();
-      setAllChecked(false); // Set all checked states to false when stopping WebSocket
+      openCreateModal("도착");
     } else {
-      openCreateModal();
+      openCreateModal("출발");
     }
   };
 
@@ -196,10 +200,15 @@ export default function TeacherBus() {
       <div className="mt-[120px] px-[10px] lg:px-[150px]">
         <NavigateBack backPage="홈" backLink='/' />
         <Title title="등하원관리" />
-        <button onClick={handleButtonClick} className="absolute top-[125px] right-[30px] lg:right-[150px] border-[2px] border-[#7C7C7C] bg-[#E3EEFF] px-3 py-1 font-bold rounded-[10px] hover:bg-[#D4DDEA] flex flex-row items-center">
-          {isWebSocketActive ? '버스 도착' : '버스 출발'}
-        </button>
-
+        {isWebSocketActive ? (
+          <button onClick={handleButtonClick} className="absolute top-[125px] right-[30px] lg:right-[150px] border-[2px] border-[#7C7C7C] bg-[#E3EEFF] px-3 py-1 font-bold rounded-[10px] hover:bg-[#D4DDEA] flex flex-row items-center">
+            버스 도착
+          </button>
+        ) : (
+          <button onClick={handleButtonClick} className="absolute top-[125px] right-[30px] lg:right-[150px] border-[2px] border-[#7C7C7C] bg-[#E3EEFF] px-3 py-1 font-bold rounded-[10px] hover:bg-[#D4DDEA] flex flex-row items-center">
+            버스 출발
+          </button>
+        )}
         <div className="absolute top-[180px] left-[30px] lg:left-[150px] rounded-[10px] border-[1px] border-[#7C7C7C] w-[86px]">
           <button className="text-[18px] flex flex-row items-center justify-center p-2" onClick={toggleDropdown}>
             <IoMdArrowDropdown className="text-[18px] mr-2" />{selectedOption}
@@ -207,8 +216,8 @@ export default function TeacherBus() {
           {isOpen && (
             <div className="absolute left-0 mt-1 w-[86px] rounded-[10px] border-[1px] border-[#7C7C7C] bg-white" ref={dropdownRef}>
               <div className="py-1" role="none">
-                <a href="#" className="text-[18px] block px-4 py-2 text-sm text-center text-gray-700" role="menuitem" onClick={() => handleOptionClick('등원')}>등원</a>
-                <a href="#" className="text-[18px] block px-4 py-2 text-sm text-center text-gray-700" role="menuitem" onClick={() => handleOptionClick('하원')}>하원</a>
+                <button className="text-[18px] block px-4 py-2 text-sm text-center text-gray-700" role="menuitem" onClick={() => handleOptionClick('등원')}>등원</button>
+                <button className="text-[18px] block px-4 py-2 text-sm text-center text-gray-700" role="menuitem" onClick={() => handleOptionClick('하원')}>하원</button>
               </div>
             </div>
           )}
