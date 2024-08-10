@@ -5,7 +5,7 @@ import CheckImg from "../../assets/teacher/check_img.png";
 import VideoConsultingImg from "../../assets/teacher/video_consulting_img.png";
 import RecordImg from "../../assets/teacher/record_img.png";
 import TeacherLayout from "../../layouts/TeacherLayout";
-import daramgi from "../../assets/teacher/daramgi.png"
+import daramgi from "../../assets/teacher/meeting-daramgi.png"
 
 export default function TeacherMeetingMain() {
     return (

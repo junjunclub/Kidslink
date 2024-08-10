@@ -7,7 +7,7 @@ import DocumentChild from '../../components/teacher/document/DocumentChild';
 import { getClassAllDocuments } from '../../api/document';
 import { getChildInfo } from '../../api/child';
 import AbsentDocument from '../../components/teacher/document/AbsentDocument';
-import daramgi from "../../assets/teacher/daramgi.png"
+import daramgi from "../../assets/teacher/document-daramgi.png"
 
 export default function TeacherDocument() {
   const [searchTerm, setSearchTerm] = useState<string>('');

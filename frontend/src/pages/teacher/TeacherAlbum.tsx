@@ -8,7 +8,7 @@ import { handleClassify, handleDeleteImage, handleImageUpload } from "../../util
 import { BiCategory } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import TeacherLayout from "../../layouts/TeacherLayout";
-import daramgi from "../../assets/teacher/daramgi.png"
+import daramgi from "../../assets/teacher/camera-daramgi.png"
 
 export default function TeacherAlbum() {
   const navigate = useNavigate();

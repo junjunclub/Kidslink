@@ -8,7 +8,7 @@ import { showToastError } from '../../components/teacher/common/ToastNotificatio
 import ToastNotification from '../../components/teacher/common/ToastNotification';
 import TeacherLayout from "../../layouts/TeacherLayout";
 import { LuPencilLine } from "react-icons/lu";
-import daramgi from "../../assets/teacher/daramgi.png"
+import daramgi from "../../assets/teacher/notice-daramgi.png"
 
 export default function TeacherNotice() {
     const { openModal, closeModal, Modal } = useModal();

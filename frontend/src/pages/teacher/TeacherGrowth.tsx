@@ -12,7 +12,7 @@ import { getKidAllGrowthDiarys } from "../../api/growthdiary";
 import GrowthDiaryForm from "../../components/teacher/growth/GrowthDiaryForm";
 import { getTeacherInfo } from "../../api/Info";
 import TeacherLayout from "../../layouts/TeacherLayout";
-import daramgi from "../../assets/teacher/daramgi.png"
+import daramgi from "../../assets/teacher/growth-daramgi.png"
 
 export default function TeacherGrowth() {
   const { openModal, Modal, isModalOpen, closeModal } = useModal();
