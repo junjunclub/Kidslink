@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavigateBack from "../../components/teacher/common/NavigateBack";
-import TeacherHeader from "../../components/teacher/common/TeacherHeader";
 import Title from "../../components/teacher/common/Title";
 import { confirmMeeting, getParentSelectedTime } from "../../api/meeting";
 import { showToastError, showToastSuccess } from "../../components/teacher/common/ToastNotification";
 import ToastNotification from "../../components/teacher/common/ToastNotification";
+import TeacherLayout from '../../layouts/TeacherLayout';
 
 interface Meeting {
     date: string;
@@ -91,42 +90,47 @@ export default function TeacherMeetingConfirm() {
     };
 
     return (
-        <>
-            <TeacherHeader />
-            <div className="mt-32 px-32">
-                <NavigateBack backPage="화상상담" backLink='/meeting' />
-                <Title title="상담시간 확정" tooltipContent={<div className="w-[280px] leading-relaxed">키즈링크만의 알고리즘으로 최대한 많은 학부모와 상담을 할 수 있도록 상담 시간을 확정해드려요.</div>}/>
-                {Object.keys(groupedMeetings).length !== 0 && 
-                <button 
-                    className="absolute top-[125px] right-[150px] mt-2 h-[40px] border-2 border-[#7C7C7C] bg-[#E3EEFF] px-3 py-1 font-bold rounded-[10px] hover:bg-[#D4DDEA]"
-                    onClick={handleConfirmMeetingClick}
-                >
-                    확정하기
-                </button> }
-                {Object.keys(groupedMeetings).length !== 0 && 
-                 <div className="text-center text-[17px]">학부모님들께서 선택하신 희망 날짜 및 시간입니다.<br />예약을 확정하시려면 확정하기 버튼을 눌러주세요.</div>
-                }
-                {Object.keys(groupedMeetings).length !== 0 ?
-                <div className="mt-8 mx-8 flex justify-center">
-                    {Object.entries(groupedMeetings).map(([parentId, { childName, times }]) => (
-                        <div key={parentId} className="bg-gray-100 p-6 mb-6 rounded-lg shadow-md w-[1200px]">
-                            <h3 className="text-xl font-bold mb-4 text-[23px]">{`${childName} 학부모님`}</h3>
-                            <ul className="list-none p-0">
-                                {times.map((timeSlot, index) => (
-                                    <li key={index} className="bg-white p-4 mb-2 border border-gray-300 rounded-md">
-                                        {`${timeSlot.date} ${timeSlot.time}`}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>:
-                <div className="flex items-center justify-center h-[400px]">
-                    학부모님들께서 선택하신 희망 날짜 및 시간이 없어요.
-                </div>}
-
+        <TeacherLayout activeMenu="meeting" setActiveMenu={() => {}}>
+            <div className="px-4 lg:px-8 py-6 lg:py-8">
+                <Title
+                    title="상담시간 확정"
+                    tooltipContent={<div className="w-[280px] leading-relaxed">키즈링크만의 알고리즘으로 최대한 많은 학부모와 상담을 할 수 있도록 상담 시간을 확정해드려요.</div>}
+                />
+                {Object.keys(groupedMeetings).length !== 0 && (
+                    <button 
+                        className="mt-4 h-[40px] border-2 border-[#7C7C7C] bg-[#E3EEFF] px-4 py-2 font-bold rounded-md hover:bg-[#D4DDEA] lg:fixed lg:top-4 lg:right-4"
+                        onClick={handleConfirmMeetingClick}
+                    >
+                        확정하기
+                    </button>
+                )}
+                {Object.keys(groupedMeetings).length !== 0 && (
+                    <div className="text-center text-[17px] mt-4 lg:mt-8">
+                        학부모님들께서 선택하신 희망 날짜 및 시간입니다.<br />예약을 확정하시려면 확정하기 버튼을 눌러주세요.
+                    </div>
+                )}
+                {Object.keys(groupedMeetings).length !== 0 ? (
+                    <div className="mt-8 mx-4 lg:mx-8 flex flex-col lg:flex-row lg:flex-wrap gap-4">
+                        {Object.entries(groupedMeetings).map(([parentId, { childName, times }]) => (
+                            <div key={parentId} className="bg-gray-100 p-6 rounded-lg shadow-md w-full lg:w-[1200px]">
+                                <h3 className="text-xl font-bold mb-4 text-[23px]">{`${childName} 학부모님`}</h3>
+                                <ul className="list-none p-0">
+                                    {times.map((timeSlot, index) => (
+                                        <li key={index} className="bg-white p-4 mb-2 border border-gray-300 rounded-md">
+                                            {`${timeSlot.date} ${timeSlot.time}`}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center h-[400px] text-center">
+                        학부모님들께서 선택하신 희망 날짜 및 시간이 없어요.
+                    </div>
+                )}
             </div>
             <ToastNotification />
-        </>
+        </TeacherLayout>
     );
 }
