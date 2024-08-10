@@ -29,6 +29,8 @@ export default function ParentLayout() {
       return '상담 예약'
     } else if (location.pathname.startsWith('/meeting')) {
       return '상담'
+    } else if (location.pathname.startsWith('/error')) {
+      return '에러가 발생했습니다'
     } else {
       return '존재하지 않는 페이지'
     }

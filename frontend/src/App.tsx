@@ -43,6 +43,8 @@ import TeacherMeetingMain from "./pages/teacher/TeacherMeetingMain";
 import TeacherMeetingConfirm from "./pages/teacher/TeacherMeetingConfirm";
 import TeacherMeetingRecordingList from "./pages/teacher/TeacherMeetingRecordingList";
 import TeacherAlbumHistory from "./pages/teacher/TeacherAlbumHistory";
+import TeacherErrorPage from "./pages/teacher/TeacherErrorPage";
+import ParentErrorPage from "./pages/parent/ParentErrorPage";
 
 export default function App() {
   const userType = useAppStore((state: AppState) => state.userType);
@@ -71,6 +73,7 @@ export default function App() {
             <Route path="/schedule" element={<ParentSchedule />} />
             <Route path="/mypage" element={<ParentMyPage />} />
             {/* 부모 사용자에 대한 잘못된 경로 */}
+            <Route path="/error" element={<ParentErrorPage />} />
             <Route
               path="*"
               element={window.location.pathname.startsWith("/api") ? null : <Navigate to="/" />}
@@ -99,6 +102,7 @@ export default function App() {
           <Route path="/meeting/confirm" element={<TeacherMeetingConfirm />} />
           <Route path="/meeting/recordings" element={<TeacherMeetingRecordingList />} />
           {/* 교사 사용자에 대한 잘못된 경로 */}
+          <Route path="/error" element={<TeacherErrorPage />} />
           <Route
             path="*"
             element={window.location.pathname.startsWith("/api") ? null : <Navigate to="/" />}
