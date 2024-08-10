@@ -1,5 +1,3 @@
-import NavigateBack from "../../components/teacher/common/NavigateBack";
-import TeacherHeader from "../../components/teacher/common/TeacherHeader";
 import Title from "../../components/teacher/common/Title";
 import ChildCard from "../../components/teacher/ourclass/ChildCard";
 import { useEffect, useState } from "react";
@@ -7,6 +5,9 @@ import { useTeacherInfoStore } from "../../stores/useTeacherInfoStore";
 import { getClassChilds } from "../../api/kindergarten";
 import { getTeacherInfo } from "../../api/Info";
 import { getDocumentsByDate } from "../../api/document";
+import TeacherLayout from "../../layouts/TeacherLayout";
+import useModal from "../../hooks/teacher/useModal";
+import daramgi from "../../assets/teacher/daramgi.png"
 
 interface Absent {
   absentId: number;
@@ -30,8 +31,8 @@ export default function TeacherOurClass() {
 
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
 
   const calculateAge = (birthDateString: string): number => {
     const birthdate = new Date(birthDateString);
@@ -39,17 +40,25 @@ export default function TeacherOurClass() {
     let age = today.getFullYear() - birthdate.getFullYear();
     const monthDifference = today.getMonth() - birthdate.getMonth();
 
-    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthdate.getDate())) {
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthdate.getDate())
+    ) {
       age--;
     }
 
     return age;
   };
 
-  const checkDocumentExists = async (childId: number): Promise<ChildDocument> => {
-    const documents = await getDocumentsByDate(childId, `${year}-${month}-${day}`);
+  const checkDocumentExists = async (
+    childId: number
+  ): Promise<ChildDocument> => {
+    const documents = await getDocumentsByDate(
+      childId,
+      `${year}-${month}-${day}`
+    );
     return documents;
-  }
+  };
 
   useEffect(() => {
     const fetchChilds = async (classId: number) => {
@@ -59,24 +68,36 @@ export default function TeacherOurClass() {
         const childPromises = fetchedChilds.map(async (child: any) => {
           const documentStatus = await checkDocumentExists(child.childId);
 
-          const absentDocumentIds = documentStatus.absentExists ? documentStatus.absents.map((absent: any) => absent.absentId) : [];
-          const dosageDocumentIds = documentStatus.dosageExists ? documentStatus.dosages.map((dosage: any) => dosage.dosageId) : [];
+          const absentDocumentIds = documentStatus.absentExists
+            ? documentStatus.absents.map((absent: any) => absent.absentId)
+            : [];
+          const dosageDocumentIds = documentStatus.dosageExists
+            ? documentStatus.dosages.map((dosage: any) => dosage.dosageId)
+            : [];
 
           return {
             ...child,
             age: calculateAge(child.birth),
             absentExists: documentStatus.absentExists,
             dosageExists: documentStatus.dosageExists,
-            absentDocumentIds: documentStatus.absentExists ? absentDocumentIds : [],
-            dosageDocumentIds: documentStatus.dosageExists ? dosageDocumentIds : []
+            absentDocumentIds: documentStatus.absentExists
+              ? absentDocumentIds
+              : [],
+            dosageDocumentIds: documentStatus.dosageExists
+              ? dosageDocumentIds
+              : [],
           };
         });
 
         const childsWithAgeAndStatus = await Promise.all(childPromises);
         setChilds(childsWithAgeAndStatus);
 
-        const absentCount = childsWithAgeAndStatus.filter(child => child.absentExists).length;
-        const dosageCount = childsWithAgeAndStatus.filter(child => child.dosageExists).length;
+        const absentCount = childsWithAgeAndStatus.filter(
+          (child) => child.absentExists
+        ).length;
+        const dosageCount = childsWithAgeAndStatus.filter(
+          (child) => child.dosageExists
+        ).length;
 
         setAbsentCount(absentCount);
         setDosageCount(dosageCount);
@@ -103,21 +124,46 @@ export default function TeacherOurClass() {
 
   const teacherInfo = useTeacherInfoStore.getState().teacherInfo;
 
+  const { openModal, closeModal, Modal } = useModal();
+
+  const handleOpenModal = (child: any) => {
+    openModal(
+      <div className="p-4">
+        <h2 className="text-2xl font-bold mb-4">{child.name}</h2>
+        <p>나이: {child.age}세</p>
+        {child.absentExists && (
+          <p className="text-red-500 mt-2">결석 기록이 있습니다.</p>
+        )}
+        {child.dosageExists && (
+          <p className="text-blue-500 mt-2">투약 기록이 있습니다.</p>
+        )}
+        <button
+          onClick={closeModal}
+          className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          닫기
+        </button>
+      </div>
+    );
+  };
+
   return (
-    <>
-      <TeacherHeader />
-      <div className="lg:mt-[85px] mt-[120px] px-4 lg:px-[150px] flex flex-col items-center">
-        <NavigateBack backPage="홈" backLink='/' />
-        <Title title={teacherInfo ? teacherInfo.kindergartenClassName : ""} />
-        <div className="absolute lg:top-[125px] top-[175px] right-[280px] lg:right-[400px] bg-[#ffdfdf] px-3 py-1 lg:px-5 lg:py-2 font-bold rounded-[10px] flex flex-row items-center text-lg lg:text-xl font-bold">
-          결석
+    <TeacherLayout
+        activeMenu="ourclass"
+        setActiveMenu={() => {}}
+        titleComponent={<Title title={teacherInfo ? teacherInfo.kindergartenClassName : ""} />}
+        imageSrc={daramgi} 
+    >
+      <div className="relative w-full lg:my-10 mt-16 px-4 lg:px-36 flex flex-col items-center">
+        <div className="flex justify-end w-full lg:w-[1200px] mt-6 mb-4 space-x-4">
+          <div className="bg-[#ffdfdf] px-3 py-1 lg:px-5 lg:py-2 font-bold rounded-[10px] flex flex-row items-center text-lg lg:text-xl font-bold">
+            결석: {absentCount}명
+          </div>
+          <div className="bg-[#e7dfff] px-3 py-1 lg:px-5 lg:py-2 font-bold rounded-[10px] flex flex-row items-center text-lg lg:text-xl font-bold">
+            투약: {dosageCount}명
+          </div>
         </div>
-        <span className="absolute lg:top-[130px] top-[175px] right-[230px] lg:right-[350px] px-2 lg:px-3 py-1 flex flex-row items-center text-lg lg:text-xl font-bold">{absentCount}명</span>
-        <div className="absolute lg:top-[125px] top-[175px] right-[140px] lg:right-[250px] bg-[#e7dfff] px-3 py-1 lg:px-5 lg:py-2 font-bold rounded-[10px] flex flex-row items-center text-lg lg:text-xl font-bold">
-          투약
-        </div>
-        <span className="absolute lg:top-[130px] top-[175px] right-[90px] lg:right-[200px] px-2 lg:px-3 py-1 flex flex-row items-center text-lg lg:text-xl font-bold">{dosageCount}명</span>
-        <div className="flex flex-row flex-wrap w-full lg:w-[1200px] lg:mt-0 mt-[50px] justify-around">
+        <div className="flex flex-row flex-wrap w-full lg:w-[1200px] mt-4 justify-around">
           {childs.map((child, index) => (
             <ChildCard
               key={index}
@@ -129,10 +175,12 @@ export default function TeacherOurClass() {
               absentId={child.absentDocumentIds}
               dosageId={child.dosageDocumentIds}
               profileImgPath={child.profile}
+              onClick={() => handleOpenModal(child)} // 클릭 시 모달 열기
             />
           ))}
         </div>
       </div>
-    </>
+      <Modal />
+    </TeacherLayout>
   );
 }

@@ -1,22 +1,24 @@
 import MeetingMainButton from "../../components/parent/meeting/MeetingMainButton";
-import NavigateBack from "../../components/teacher/common/NavigateBack";
-import TeacherHeader from "../../components/teacher/common/TeacherHeader";
 import Title from "../../components/teacher/common/Title";
 import CalendarImg from "../../assets/teacher/calendar_img.png";
 import CheckImg from "../../assets/teacher/check_img.png";
 import VideoConsultingImg from "../../assets/teacher/video_consulting_img.png";
 import RecordImg from "../../assets/teacher/record_img.png";
-import { Link } from "react-router-dom";
+import TeacherLayout from "../../layouts/TeacherLayout";
+import daramgi from "../../assets/teacher/daramgi.png"
 
 export default function TeacherMeetingMain() {
     return (
-        <>
-            <TeacherHeader />
-            <div className="mt-[130px] px-[20px] lg:px-[130px]">
-                <NavigateBack backPage="홈" backLink='/' />
-                <Title title="화상상담" />
+        <TeacherLayout
+            activeMenu="meeting"
+            setActiveMenu={() => {}}
+            titleComponent={<Title title="화상상담" />}
+            imageSrc={daramgi} 
+        >
+            <div className="relative w-full lg:my-10 mt-16 px-4 lg:px-36 flex flex-col items-center">
+
                 <div className="w-full flex justify-center items-center">
-                    <div className="flex flex-row flex-wrap w-[1135px] lg:flex-row items-center justify-between lg:mt-[50px] mt-10 space-y-8 lg:space-y-0">
+                    <div className="flex flex-row flex-wrap w-full lg:w-[1135px] items-center justify-between mt-10 lg:mt-[50px] space-y-8 lg:space-y-0">
                         <MeetingMainButton 
                             title="상담가능시간 open" 
                             description="학부모 상담이 가능한 시간을 선택해주세요. 해당 시간에 학부모가 상담 신청을 할 수 있어요." 
@@ -64,6 +66,6 @@ export default function TeacherMeetingMain() {
                     </div>
                 </div>
             </div>
-        </>
+        </TeacherLayout>
     );
 }

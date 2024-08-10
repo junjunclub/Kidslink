@@ -28,7 +28,7 @@ export default function AbsentDocument({ absentId, onUpdate, isOurClass }: Absen
   }, [absentId]);
 
   const handleCheckboxClick = async () => {
-    if (absentDocument.confirmationStatus === "F") {
+    if (absentDocument?.confirmationStatus === "F") {
       try {
         await checkAbsentDocument(absentId);
         setAbsentDocument({ ...absentDocument, confirmationStatus: "T" });
@@ -46,6 +46,10 @@ export default function AbsentDocument({ absentId, onUpdate, isOurClass }: Absen
   if (!absentDocument) {
     return <div>Loading...</div>;
   }
+
+  const detailsContent = absentDocument.details ? absentDocument.details.split('\n').map((line, index) => (
+    <p key={index} className="mb-2">{line}</p>
+  )) : <p>기타사항이 없습니다.</p>;
 
   return (
     <div className="font-KoPubDotum w-full lg:w-[720px] h-auto lg:h-[520px] rounded-[20px] bg-[#ffffff] p-4 lg:p-8">
@@ -70,9 +74,7 @@ export default function AbsentDocument({ absentId, onUpdate, isOurClass }: Absen
         <DocumentItem title="사유" content={absentDocument.reason} />
         <DocumentItem 
           title="기타사항" 
-          content={absentDocument.details.split('\n').map((line, index) => (
-            <p key={index} className="mb-2">{line}</p>
-          ))} 
+          content={detailsContent} 
         />
       </div>
       <ToastNotification />

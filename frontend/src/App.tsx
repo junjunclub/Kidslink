@@ -80,7 +80,7 @@ export default function App() {
       ) : userType === "ROLE_TEACHER" ? (
         <>
           {/* 교사 사용자의 라우트 */}
-          <Route path="/" element={<TeacherHome />} />
+          <Route path="/" element={<TeacherOurClass />} />
           <Route path="/document" element={<TeacherDocument />} />
           <Route path="/notice" element={<TeacherNotice />} />
           <Route path="/album" element={<TeacherAlbum />} />
