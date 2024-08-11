@@ -72,11 +72,24 @@ export async function postTeacherReservations(
 }
 
 //상담일자 확정하기
-export async function confirmMeeting() {
+export async function confirmMeeting(selectedMeetings) {
   try {
-    const response = await axiosInstance.post("meeting/confirm");
+    const response = await axiosInstance.post("meeting/confirm",selectedMeetings);
     if (response.data.status === "success") {
       return response.data.data;
+    } else {
+      throw new Error("Failed to confirmMeeting");
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+export async function classifyMeeting(selectedMeetings) {
+  try {
+    const response = await axiosInstance.post("meeting/classify",selectedMeetings);
+    if (response.data.status === "success"||response.data.status === "fail") {
+      return response.data;
     } else {
       throw new Error("Failed to confirmMeeting");
     }
