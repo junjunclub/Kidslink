@@ -64,12 +64,6 @@ export default function ParentBus() {
 
   useEffect(() => {
     if (mapRef.current && busStops.length > 0) {
-
-      const infowindow = new window.kakao.maps.InfoWindow({
-        content: '',
-      });
-
-      console.log(busStops)
   
       busStops.forEach((busStop) => {
         const busStopPosition = new window.kakao.maps.LatLng(busStop.latitude, busStop.longitude);
@@ -81,20 +75,41 @@ export default function ParentBus() {
           title: busStop.busStopName,
         });
   
+        // 커스텀 오버레이 생성
+        const content = document.createElement('div');
+        content.style.position = 'relative';
+        content.style.backgroundColor = '#fff';
+        content.style.borderRadius = '8px';
+        content.style.boxShadow = '0 2px 10px rgba(0,0,0,0.15)';
+        content.style.padding = '10px';
+        content.style.textAlign = 'center';
+        content.style.fontSize = '14px';
+        content.style.color = '#333';
+        content.style.maxWidth = '200px';
+        content.innerHTML = `
+          <strong style="display: block; font-size: 16px; margin-bottom: 5px;">${busStop.busStopName}</strong>
+        `;
+  
+        const customOverlay = new window.kakao.maps.CustomOverlay({
+          position: busStopPosition,
+          content: content,
+          yAnchor: 1, // 인포 윈도우의 위치를 조정
+          xAnchor: 0.5,
+        });
+  
         // 마커 클릭 이벤트 등록
         window.kakao.maps.event.addListener(busStopMarker, 'click', function () {
-          infowindow.setContent(`<div style="padding:5px;">${busStop.busStopName}</div>
-            `);
-          infowindow.open(mapRef.current, busStopMarker);
+          customOverlay.setMap(mapRef.current);
         });
       });
   
-      // 지도 클릭 시 정보창 닫기
+      // 지도 클릭 시 커스텀 오버레이 닫기
       window.kakao.maps.event.addListener(mapRef.current, 'click', function () {
-        infowindow.close();
+        mapRef.current?.overlayMapTypes.forEach((overlay) => overlay.setMap(null));
       });
     }
   }, [mapRef.current, busStops]);
+  
 
 
   const initializeMap = () => {
