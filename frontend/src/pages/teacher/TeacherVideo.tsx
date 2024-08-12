@@ -43,6 +43,8 @@ export default function TeacherVideo() {
     muted: false,
     volume: 0.4,
   });
+  const [isReadyToStart, setIsReadyToStart] = useState(false); // 0813 김범수 추가
+
   const [myStreamId, setMyStreamId] = useState<string | undefined>(undefined);
   const [otherVideoActive, setOtherVideoActive] = useState(false);
   const [otherOpacity, setOtherOpacity] = useState(false);
@@ -130,11 +132,20 @@ export default function TeacherVideo() {
     }
   }, [control, openvidu.publisher]);
 
-  useEffect(() => {
-    if (isSessionJoined && !isRecording) {
-      handleStartRecording();
-    }
-  }, [isSessionJoined]);
+  // 세션에 접근하여 2명이 만들어진 경우 (isReadyToStart) 녹화 시작
+    useEffect(() => {
+      if (isSessionJoined && isReadyToStart && openvidu.session & !isRecording) {
+        // 녹화 시작
+        handleStartRecording();
+      }
+    }, [isReadyToStart, isSessionJoined, openvidu]);
+
+  // 처음 세션 조인 시 녹화 시작
+  // useEffect(() => {
+  //   if (isSessionJoined && !isRecording) {
+  //     handleStartRecording();
+  //   }
+  // }, [isSessionJoined]);
 
   const handleStartRecording = async () => {
     try {
@@ -268,7 +279,8 @@ export default function TeacherVideo() {
                       setOpenvidu,
                       setIsSessionJoined,
                       setMyStreamId,
-                      setOtherVideoActive
+                      setOtherVideoActive,
+                      setIsReadyToStart
                     )
                   }
                   className="w-[70px] h-[38px] border-[2px] border-[#7C7C7C] bg-[#E3EEFF] px-3 py-1 font-bold rounded-[8px] hover:bg-[#D4DDEA]"
@@ -284,8 +296,6 @@ export default function TeacherVideo() {
             control={control}
             handleControl={setControl}
             close={handleLeaveSession}
-            startRecording={handleStartRecording} // 녹화 시작 함수 전달
-            stopRecording={handleStopRecording} // 녹화 중지 함수 전달
             isRecording={isRecording} // 녹화 상태 전달
           />
         )}

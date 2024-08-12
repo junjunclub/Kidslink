@@ -42,6 +42,8 @@ export default function ParentVideo() {
   const [meetingEndTime, setMeetingEndTime] = useState(""); // 상담 종료 시간 상태 추가
   const [otherVideoActive, setOtherVideoActive] = useState(false);
 
+  const [isReadyToStart, setIsReadyToStart] = useState(false); // 0813 김범수 추가
+
   // 선생님 이름 및 상담 날짜, 시간 가져오기
   useEffect(() => {
     const fetchMeetingInfo = async () => {
@@ -174,7 +176,8 @@ export default function ParentVideo() {
                     setOpenvidu,
                     setIsSessionJoined,
                     setMyStreamId,
-                    setOtherVideoActive // 추가
+                    setOtherVideoActive, // 추가
+                    setIsReadyToStart
                   )
                 }
                 className="w-20 h-8 bg-[#ffec8a] rounded-full flex items-center justify-center text-sm font-medium text-[#212121] hover:bg-[#fdda6e] transition-colors"

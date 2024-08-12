@@ -52,7 +52,5 @@ export interface TeacherMeetingFooterProps {
   control: ControlState;
   handleControl: (update: (prev: ControlState) => ControlState) => void;
   close: () => void;
-  startRecording: () => void;
-  stopRecording: () => void; // 녹음 중지 함수 추가
   isRecording: boolean; // 현재 녹음 상태를 나타내는 프로퍼티 추가
 }

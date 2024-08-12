@@ -1,5 +1,5 @@
 import { OpenVidu, StreamEvent, StreamPropertyChangedEvent } from "openvidu-browser";
-import { fetchRecordings, getToken, handleSpeechRecognitionSignalByParent } from "../api/openvidu";
+import { fetchRecordings, getToken, handleSpeechRecognitionSignalByParent, startMainRecording } from "../api/openvidu";
 import { OpenViduState, Recording, User } from "../types/openvidu";
 import { getParentInfo } from "../api/Info";
 
@@ -8,7 +8,8 @@ export const joinSession = async (
   setOpenvidu: React.Dispatch<React.SetStateAction<OpenViduState>>,
   setIsSessionJoined: React.Dispatch<React.SetStateAction<boolean>>,
   setMyStreamId: React.Dispatch<React.SetStateAction<string | undefined>>, // 이 매개변수 추가
-  setOtherVideoActive: React.Dispatch<React.SetStateAction<boolean>> // 상대방 비디오 상태 추가
+  setOtherVideoActive: React.Dispatch<React.SetStateAction<boolean>>, // 상대방 비디오 상태 추가
+  setIsReadyToStart: React.Dispatch<React.SetStateAction<boolean>>, // 추가된 매개변수: 시작 준비 상태 관리
 ) => {
   if (!user.sessionId) {
     console.log("user", user);
@@ -45,6 +46,15 @@ export const joinSession = async (
     console.warn(exception);
   });
 
+  // 참가자들이 모두 세션에 참여했는지 확인하는 로직
+  session.on("signal:readyToStart", (event) => {
+    console.log("readyToStart 이벤트 동작", user)
+    if (event.data === "ready") {
+      console.log("상대방도 세션에 참여함");
+      setIsReadyToStart(true);
+    }
+  });
+
   // 새로운 이벤트 등록: streamPropertyChanged
   // 수정 필요한 부분
   session.on("streamPropertyChanged", (event: StreamPropertyChangedEvent) => {
@@ -69,6 +79,14 @@ export const joinSession = async (
         }
         return myStreamId;
       });
+    }
+  });
+
+  session.on("signal:readyToStart", (event) => {
+    // 상대방이 입장했음을 알리는 신호를 받으면
+    if (event.data === "ready") {
+      console.log("상대방도 세션에 참여했습니다.");
+      setIsReadyToStart(true);
     }
   });
 
@@ -97,7 +115,43 @@ export const joinSession = async (
 
       // 자신의 스트림 ID 저장
       setMyStreamId(publisher.stream.streamId);
+      
+      // 자신이 세션에 참여했다고 알림 (커스텀 이벤트 등록)
+      session.signal({
+        data: "ready", // 전송할 데이터
+        to: [], // 수신자 배열 (빈 배열은 모든 참가자에게 보냄)
+        type: "readyToStart", // 커스텀 이벤트 이름
+      });
+
+      // 상대방이 이미 입장해 있었는지 확인
+      session.on("signal:readyToStart", (event) => {
+        if (event.data === "ready") {
+          console.log("상대방이 이미 세션에 참여했습니다.", user);
+          setIsReadyToStart(true);
+          console.log("세션 시작하기")
+          // 상대방이 준비된 상태라면 세션을 시작
+          // if (user.sessionId) {
+          //   startMainRecording(user.sessionId); // 선생님 측에서 녹화 시작
+          // 녹화는 선생님 컴포넌트에서 진행 
+          // }
+        }
+      });
+
       setIsSessionJoined(true);
+
+
+      // 양쪽 모두 준비되면 비디오 스트림과 녹화를 시작
+      // setIsReadyToStart((ready) => {
+      //   if (ready) {
+      //     // 오디오/비디오 활성화
+      //     // publisher.publishAudio(true);
+      //     // publisher.publishVideo(true);
+
+      //     // 녹화 시작
+      //     startMainRecording(user.sessionId);
+      //   }
+      //   return ready;
+      // });
     })
     .catch((error) => {
       console.log("There was an error connecting to the session:", error.code, error.message);
