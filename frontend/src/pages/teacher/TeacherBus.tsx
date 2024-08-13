@@ -11,7 +11,7 @@ import useModal from "../../hooks/teacher/useModal";
 import TeacherLayout from "../../layouts/TeacherLayout";
 import daramgi from "../../assets/teacher/bus-daramgi.png"
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import shuttlebus from '../../assets/teacher/shuttlebus.gif'
+import shuttlebus from '../../assets/teacher/shuttle.gif'
 import '../../index.css'
 
 const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL;

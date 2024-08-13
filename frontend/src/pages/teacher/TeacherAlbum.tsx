@@ -7,6 +7,8 @@ import PulseLoader from "react-spinners/PulseLoader";
 import { handleClassify, handleDeleteImage, handleImageUpload } from "../../utils/album";
 import TeacherLayout from "../../layouts/TeacherLayout";
 import daramgi from "../../assets/teacher/camera-daramgi.png";
+import daramgibg from "../../assets/teacher/imguploadbg.png";
+import daramgibg2 from "../../assets/teacher/imageuploadbg2.png";
 
 export default function TeacherAlbum() {
   const navigate = useNavigate();
@@ -29,11 +31,12 @@ export default function TeacherAlbum() {
     { label: "전송내역", link: "/album/history" },
 ];
 
-  return (
+return (
     <TeacherLayout
-        activeMenu="album"
-        setActiveMenu={() => {}}
-        titleComponent={<Title 
+      activeMenu="album"
+      setActiveMenu={() => {}}
+      titleComponent={
+        <Title 
           title="사진분류" 
           tooltipContent={
             <div className="leading-relaxed w-[240px]">
@@ -41,9 +44,22 @@ export default function TeacherAlbum() {
             </div>
           }
           tabs={tabs} 
-        />}
-        imageSrc={daramgi} 
+        />
+      }
+      imageSrc={daramgi} 
     >
+      <div className="relative w-full lg:my-10 my-5 mb-32 px-7 flex flex-col items-center">
+        {/* 배경에서 사진 지우려면 이 부분 삭제하면 됨 */}
+        <div
+          className="absolute inset-0 bg-white shadow-lg rounded-lg overflow-hidden z-0"
+        style={{
+          backgroundImage: `url(${daramgibg2})`,
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.3 // 원하는 투명도 값으로 조절
+        }}
+      ></div>
       <div className="relative w-full lg:my-10 my-5 mb-32 px-7 flex flex-col items-center">
         <div className={`h-[470px] flex lg:flex-row flex-col items-center ${images.length === 0 || loading ? 'justify-center' : 'justify-between'} w-full`}>
           {!loading && (
@@ -97,6 +113,7 @@ export default function TeacherAlbum() {
           )}
         </div>
       </div>
+    </div>
       <style>{`
         @keyframes pulse {
           0%, 100% {
